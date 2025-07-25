@@ -1,0 +1,43 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.log
+
+# Virtual environment
+venv/
+env/
+ENV/
+.env
+
+# Jupyter/VSCode-related
+.ipynb_checkpoints/
+.vscode/
+*.code-workspace
+
+# Hugging Face auth token (if saved locally)
+.huggingface/
+
+# Model weights or cache
+*.bin
+*.pt
+*.pth
+cache/
+transformers_cache/
+*.h5
+*.ckpt
+
+# Environment files
+.env
+.env.*
+
+# Data
+ml/data/test_articles.json
+ml/data/source_trust_list.json  # (if sensitive or large, otherwise optional)
+
+# OS files
+.DS_Store
+Thumbs.db
