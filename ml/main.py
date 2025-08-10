@@ -2,6 +2,7 @@ from models.bert_classifier import BERTFakeNewsClassifier
 from models.sentiment_analysis import SentimentAnalyzer
 from models.named_entitiy_recognition import NERExtractor
 from models.claim_density import ClaimDensityScore
+from models.source_trust_checker import SourceTrustChecker
 
 # text="Infinity stones found in Bangalore, Time stone found while digging for construction"
 # text1 = "We faced hunger before, but never like this': skeletal children fill hospital wards as starvation grips Gaza"
@@ -12,6 +13,7 @@ classifier = BERTFakeNewsClassifier()
 analyzer = SentimentAnalyzer()
 ner = NERExtractor()
 scorer = ClaimDensityScore()
+source_checker = SourceTrustChecker()
 
 p_fake, p_real = classifier.predict(text)
 print(f"Fake probability: {p_fake:.2f}, Real probability: {p_real:.2f}")
@@ -19,5 +21,7 @@ sentiment_result = analyzer.analyze(text)
 print(sentiment_result)
 entities = ner.extract(text)
 print(entities)
-
 print(scorer.score(text))
+
+result = source_checker.check("https://www.abcnews.com.co/politics/trump-wins-2024/")
+print(result)
