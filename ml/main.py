@@ -3,6 +3,7 @@ from models.sentiment_analysis import SentimentAnalyzer
 from models.named_entitiy_recognition import NERExtractor
 from models.claim_density import ClaimDensityScore
 from models.source_trust_checker import SourceTrustChecker
+from models.live_checker import LiveCheckerService
 
 # text="Infinity stones found in Bangalore, Time stone found while digging for construction"
 # text1 = "We faced hunger before, but never like this': skeletal children fill hospital wards as starvation grips Gaza"
@@ -25,3 +26,13 @@ print(scorer.score(text))
 
 result = source_checker.check("https://www.abcnews.com.co/politics/trump-wins-2024/")
 print(result)
+
+article = "Can Israel win hearts and minds while it continues to kill Palestinian journalists?."
+svc = LiveCheckerService()
+result = svc.check(article)
+print("Queries:", result["queries"])
+print("Decision:", result["decision"])
+for i, m in enumerate(result["top_matches"], 1):
+    print(
+        f"{i}. {m['similarity']:.3f} | {m['source']} | {m['title']} | {m['published_at']}"
+    )
