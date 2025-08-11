@@ -27,7 +27,7 @@ print(scorer.score(text))
 result = source_checker.check("https://www.abcnews.com.co/politics/trump-wins-2024/")
 print(result)
 
-article = "Can Israel win hearts and minds while it continues to kill Palestinian journalists?."
+article = "Can Israel win hearts and minds while it continues to kill Palestinian ?."
 svc = LiveCheckerService()
 result = svc.check(article)
 print("Queries:", result["queries"])
