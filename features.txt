@@ -1,5 +1,7 @@
 Core Features
 
+Detect using Text/URL
+
 Fake News Classification using BERT
 
 Sentiment and Subjectivity Analysis (VADER or TextBlob)
@@ -17,7 +19,5 @@ Trust-Weighted Similarity Scoring Algorithm
 Freshness Weighting for headline recency
 
 Custom Claim Density Scoring Algorithm
-
-Meta-Classifier (Logistic Regression or NN) combining multiple signals
 
 Structured Dashboard Output (Multi-signal explanation, not black-box)
