@@ -8,7 +8,7 @@ Named Entity Recognition using spaCy
 
 Source Credibility Checker (based on trusted/untrusted domain list)
 
-Live Headline Matching via News API (Bing/ContextualWeb)
+Live Headline Matching via News API (NewsAPI)
 
 Semantic Similarity using Sentence-BERT
 
@@ -17,8 +17,6 @@ Trust-Weighted Similarity Scoring Algorithm
 Freshness Weighting for headline recency
 
 Custom Claim Density Scoring Algorithm
-
-NER-Based Vagueness Detection (optional)
 
 Meta-Classifier (Logistic Regression or NN) combining multiple signals
 
