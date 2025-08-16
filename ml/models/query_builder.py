@@ -45,7 +45,7 @@ class QueryBuilder:
         return score
     
     def _extract_enhanced_entities(self, text: str) -> tuple[List[str], List[str]]:
-        """Extract entities using both NER and custom patterns."""
+        """Extract entities using NER and comprehensive keyword extraction."""
         doc = self.nlp(text)
         
         # Standard NER entities
@@ -54,119 +54,135 @@ class QueryBuilder:
         ]
         dates_nums = [e.text for e in doc.ents if e.label_ in {"DATE", "CARDINAL"}]
         
-        # Custom entity extraction for sports and fictional characters
-        custom_entities = self._extract_custom_entities(text.lower())
+        # Extract important keywords that NER misses
+        important_keywords = self._extract_important_keywords(text)
         
         # Combine and deduplicate
-        all_names = list(dict.fromkeys(names + custom_entities))
+        all_names = list(dict.fromkeys(names + important_keywords))
         all_dates_nums = list(dict.fromkeys(dates_nums))
         
         return all_names, all_dates_nums
     
-    def _extract_custom_entities(self, text: str) -> List[str]:
-        """Extract custom entities that NER might miss."""
-        custom_entities = []
+    def _extract_important_keywords(self, text: str) -> List[str]:
+        """Extract important keywords using comprehensive NLP analysis."""
+        # Clean the text first - remove quotes and apostrophes that cause issues
+        clean_text = text.replace("'", "").replace('"', "").replace('"', "").replace('"', "")
+        doc = self.nlp(clean_text.lower())
         
-        # Fictional characters and superheroes
-        fictional_patterns = [
-            r'\b(incredible\s+hulk)\b',
-            r'\b(harry\s+potter)\b',
-            r'\b(sherlock\s+holmes)\b',
-            r'\b(spiderman|spider\s+man)\b',
-            r'\b(superman|super\s+man)\b',
-            r'\b(batman|bat\s+man)\b',
-            r'\b(iron\s+man)\b',
-            r'\b(captain\s+america)\b',
-            r'\b(luke\s+skywalker)\b',
-            r'\b(gandalf)\b',
-            r'\b(frodo)\b'
-        ]
+        important_terms = []
         
-        for pattern in fictional_patterns:
-            matches = re.findall(pattern, text)
-            custom_entities.extend(matches)
+        # Extract nouns, verbs, adjectives, and proper nouns
+        for token in doc:
+            # Skip stop words, punctuation, and very short words
+            if (not token.is_stop and 
+                not token.is_punct and 
+                not token.is_space and
+                len(token.text) > 2 and
+                token.pos_ in {"NOUN", "VERB", "ADJ", "PROPN"}):
+                
+                # Clean and add the word
+                word = token.lemma_.lower()
+                if word and word not in important_terms:
+                    important_terms.append(word)
         
-        # Sports terms
-        sports_patterns = [
-            r'\b(cricket|worldcup|ipl|test\s+match|odi|t20)\b',
-            r'\b(football|fifa|championship|world\s+cup|premier\s+league)\b',
-            r'\b(basketball|nba)\b',
-            r'\b(tennis|wimbledon|us\s+open|australian\s+open)\b',
-            r'\b(rugby|rugby\s+union|rugby\s+league)\b',
-            r'\b(olympics|olympic\s+games)\b',
-            r'\b(batsman|bowler|wicket|goal|try|touchdown|ace|serve)\b'
-        ]
+        # Extract noun phrases for better context
+        noun_chunks = []
+        for chunk in doc.noun_chunks:
+            chunk_text = chunk.text.lower()
+            # Clean the chunk text
+            clean_chunk = chunk_text.replace("'", "").replace('"', "").replace('"', "").replace('"', "")
+            if len(clean_chunk) > 3 and clean_chunk not in important_terms and clean_chunk not in noun_chunks:
+                noun_chunks.append(clean_chunk)
         
-        for pattern in sports_patterns:
-            matches = re.findall(pattern, text)
-            custom_entities.extend(matches)
+        # Extract verb phrases
+        verb_phrases = []
+        for token in doc:
+            if token.pos_ == "VERB" and token.dep_ in {"ROOT", "ccomp", "xcomp"}:
+                # Get the verb and its direct object if available
+                for child in token.children:
+                    if child.dep_ == "dobj" and not child.is_stop:
+                        phrase = f"{token.lemma_.lower()} {child.lemma_.lower()}"
+                        if phrase not in verb_phrases:
+                            verb_phrases.append(phrase)
         
-        # Remove duplicates and return
-        return list(dict.fromkeys(custom_entities))
-
+        # Combine all types of important terms
+        all_terms = important_terms + noun_chunks + verb_phrases
+        
+        # Remove duplicates and return top terms
+        unique_terms = list(dict.fromkeys(all_terms))
+        return unique_terms[:15]  # Return top 15 terms
+    
     def build(self, text: str, max_queries: int = 3, max_len: int = 180) -> List[str]:
         text = text.strip()
         
-        # Handle very short texts (single words or very short phrases)
+        # Handle very short texts
         if len(text.split()) <= 3:
             return [text[:max_len]]
         
-        # For longer texts, always go through the full query building process
+        # Split into sentences
         sentences = self._split_sentences(text)
         if not sentences:
             return [text[:max_len]]
 
-        scored = [(self._score_sentence(s), s) for s in sentences]
-        scored.sort(key=lambda x: x[0], reverse=True)
+        # Extract entities from the entire text
+        all_names, all_dates_nums = self._extract_enhanced_entities(text)
+        
+        queries = []
+        seen = set()
 
-        top = [s for _, s in scored[:2]]  # pick top 2 sentences
-        queries: List[str] = []
-        seen: Set[str] = set()
+        # Strategy 1: Create a comprehensive entity query
+        if all_names:
+            # Take top 4-5 most important entities
+            key_entities = all_names[:5]
+            entity_query = " ".join(key_entities)
+            if len(entity_query) <= max_len and entity_query not in seen:
+                seen.add(entity_query)
+                queries.append(entity_query)
 
-        for sent in top:
-            # Use enhanced entity extraction
-            names, dates_nums = self._extract_enhanced_entities(sent)
+        # Strategy 2: Create focused entity queries (pairs)
+        if all_names and len(queries) < max_queries:
+            for i in range(0, len(all_names), 2):
+                if len(queries) >= max_queries:
+                    break
+                if i + 1 < len(all_names):
+                    pair_query = f"{all_names[i]} {all_names[i+1]}"
+                else:
+                    pair_query = all_names[i]
+                
+                if pair_query not in seen and len(pair_query) <= max_len:
+                    seen.add(pair_query)
+                    queries.append(pair_query)
 
-            # Tier 1: quoted sentence (only if not too long)
-            if len(sent) <= max_len:
-                q1 = f'"{sent}"'
-                if q1 not in seen:
-                    seen.add(q1)
-                    queries.append(q1)
-                    if len(queries) >= max_queries:
-                        return queries
-
-            # Tier 2: entities with date or numbers (only if we have meaningful entities)
-            if names or dates_nums:
-                key_terms = names + dates_nums
-                q2 = " ".join(dict.fromkeys(key_terms))
-                if q2 and len(q2) > 2 and q2 not in seen:  # Ensure query is meaningful
-                    seen.add(q2)
-                    queries.append(q2)
-                    if len(queries) >= max_queries:
-                        return queries
-
-            # Tier 3: entities only (only if we have meaningful entities)
-            if names:
-                q3 = " ".join(dict.fromkeys(names))
-                if q3 and len(q3) > 2 and q3 not in seen:  # Ensure query is meaningful
-                    seen.add(q3)
-                    queries.append(q3)
-                    if len(queries) >= max_queries:
-                        return queries
-
-        # If we still don't have enough meaningful queries, create better fallbacks
-        if len(queries) < max_queries:
-            # Extract meaningful keywords from the text
-            meaningful_keywords = self._extract_meaningful_keywords(text)
-            for keyword in meaningful_keywords:
-                if keyword not in seen and len(keyword) > 2:
-                    seen.add(keyword)
-                    queries.append(keyword)
+        # Strategy 3: Create entity + number queries
+        if all_names and all_dates_nums and len(queries) < max_queries:
+            for entity in all_names[:3]:
+                for number in all_dates_nums[:2]:
                     if len(queries) >= max_queries:
                         break
+                    number_query = f"{entity} {number}"
+                    if number_query not in seen and len(number_query) <= max_len:
+                        seen.add(number_query)
+                        queries.append(number_query)
 
-        return queries or [text[:max_len]]
+        # Strategy 4: Use meaningful keywords as fallback
+        if len(queries) < max_queries:
+            meaningful_keywords = self._extract_meaningful_keywords(text)
+            for keyword in meaningful_keywords:
+                if len(queries) >= max_queries:
+                    break
+                if keyword not in seen and len(keyword) > 3:
+                    seen.add(keyword)
+                    queries.append(keyword)
+
+        # Ensure we have at least some queries
+        if not queries:
+            # Last resort: use first few meaningful words
+            words = [w for w in text.split() if len(w) > 3 and w.lower() not in {'the', 'and', 'for', 'with', 'this', 'that'}]
+            if words:
+                fallback_query = " ".join(words[:4])
+                queries.append(fallback_query[:max_len])
+
+        return queries[:max_queries]
     
     def _extract_meaningful_keywords(self, text: str) -> List[str]:
         """Extract meaningful keywords from text when NER fails."""
