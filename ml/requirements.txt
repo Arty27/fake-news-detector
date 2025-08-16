@@ -1,2 +1,18 @@
+# Core dependencies
 torch>=1.13.0
 transformers>=4.28.0
+requests==2.32.3
+python-dotenv==1.0.1
+tenacity==8.3.0
+python-dateutil==2.9.0.post0
+
+# Machine learning & NLP
+transformers==4.43.3
+torch>=2.2.0
+sentence-transformers==3.0.1
+scikit-learn==1.5.1
+spacy==3.7.5
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1.tar.gz
+
+# Optional but useful for development/logging
+tqdm==4.66.5
