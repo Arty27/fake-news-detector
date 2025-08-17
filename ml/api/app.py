@@ -67,6 +67,7 @@ app.add_middleware(
 app.include_router(text_router)
 app.include_router(url_router)
 
+
 @app.get("/", tags=["Root"])
 async def root():
     """
@@ -81,37 +82,40 @@ async def root():
             "batch_text_analysis": "/text/analyze/batch",
             "url_analysis": "/url/analyze",
             "health_check": "/health",
-            "documentation": "/docs"
+            "documentation": "/docs",
         },
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }
+
 
 @app.get("/health", tags=["Health"])
 async def health_check():
     """
     Overall API health check
-    
+
     Returns the status of all services and the overall API health.
     """
     try:
         # Check text analysis service
         from api.services.text_service import TextAnalysisService
+
         text_service_healthy = True
         try:
             text_service = TextAnalysisService()
         except:
             text_service_healthy = False
-        
+
         # Check URL analysis service
         from api.services.url_service import URLAnalysisService
+
         url_service_healthy = True
         try:
             url_service = URLAnalysisService()
         except:
             url_service_healthy = False
-        
+
         overall_healthy = text_service_healthy and url_service_healthy
-        
+
         return {
             "status": "healthy" if overall_healthy else "unhealthy",
             "timestamp": datetime.now().isoformat(),
@@ -119,24 +123,25 @@ async def health_check():
             "services": {
                 "text_analysis": {
                     "status": "healthy" if text_service_healthy else "unhealthy",
-                    "models_loaded": text_service_healthy
+                    "models_loaded": text_service_healthy,
                 },
                 "url_analysis": {
                     "status": "healthy" if url_service_healthy else "unhealthy",
-                    "models_loaded": url_service_healthy
-                }
+                    "models_loaded": url_service_healthy,
+                },
             },
-            "overall_health": overall_healthy
+            "overall_health": overall_healthy,
         }
-        
+
     except Exception as e:
         return {
             "status": "unhealthy",
             "timestamp": datetime.now().isoformat(),
             "version": "1.0.0",
             "error": str(e),
-            "overall_health": False
+            "overall_health": False,
         }
+
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
@@ -147,9 +152,10 @@ async def http_exception_handler(request, exc):
             "success": False,
             "error": exc.detail,
             "status_code": exc.status_code,
-            "timestamp": datetime.now().isoformat()
-        }
+            "timestamp": datetime.now().isoformat(),
+        },
     )
+
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
@@ -160,10 +166,12 @@ async def general_exception_handler(request, exc):
             "success": False,
             "error": "Internal server error",
             "details": str(exc),
-            "timestamp": datetime.now().isoformat()
-        }
+            "timestamp": datetime.now().isoformat(),
+        },
     )
+
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -43,57 +43,70 @@ class QueryBuilder:
         if 8 <= word_len <= 30:
             score += 1
         return score
-    
+
     def _extract_enhanced_entities(self, text: str) -> tuple[List[str], List[str]]:
         """Extract entities using NER and comprehensive keyword extraction."""
         doc = self.nlp(text)
-        
+
         # Standard NER entities
         names = [
             e.text for e in doc.ents if e.label_ in {"PERSON", "ORG", "GPE", "LOC"}
         ]
         dates_nums = [e.text for e in doc.ents if e.label_ in {"DATE", "CARDINAL"}]
-        
+
         # Extract important keywords that NER misses
         important_keywords = self._extract_important_keywords(text)
-        
+
         # Combine and deduplicate
         all_names = list(dict.fromkeys(names + important_keywords))
         all_dates_nums = list(dict.fromkeys(dates_nums))
-        
+
         return all_names, all_dates_nums
-    
+
     def _extract_important_keywords(self, text: str) -> List[str]:
         """Extract important keywords using comprehensive NLP analysis."""
         # Clean the text first - remove quotes and apostrophes that cause issues
-        clean_text = text.replace("'", "").replace('"', "").replace('"', "").replace('"', "")
+        clean_text = (
+            text.replace("'", "").replace('"', "").replace('"', "").replace('"', "")
+        )
         doc = self.nlp(clean_text.lower())
-        
+
         important_terms = []
-        
+
         # Extract nouns, verbs, adjectives, and proper nouns
         for token in doc:
             # Skip stop words, punctuation, and very short words
-            if (not token.is_stop and 
-                not token.is_punct and 
-                not token.is_space and
-                len(token.text) > 2 and
-                token.pos_ in {"NOUN", "VERB", "ADJ", "PROPN"}):
-                
+            if (
+                not token.is_stop
+                and not token.is_punct
+                and not token.is_space
+                and len(token.text) > 2
+                and token.pos_ in {"NOUN", "VERB", "ADJ", "PROPN"}
+            ):
+
                 # Clean and add the word
                 word = token.lemma_.lower()
                 if word and word not in important_terms:
                     important_terms.append(word)
-        
+
         # Extract noun phrases for better context
         noun_chunks = []
         for chunk in doc.noun_chunks:
             chunk_text = chunk.text.lower()
             # Clean the chunk text
-            clean_chunk = chunk_text.replace("'", "").replace('"', "").replace('"', "").replace('"', "")
-            if len(clean_chunk) > 3 and clean_chunk not in important_terms and clean_chunk not in noun_chunks:
+            clean_chunk = (
+                chunk_text.replace("'", "")
+                .replace('"', "")
+                .replace('"', "")
+                .replace('"', "")
+            )
+            if (
+                len(clean_chunk) > 3
+                and clean_chunk not in important_terms
+                and clean_chunk not in noun_chunks
+            ):
                 noun_chunks.append(clean_chunk)
-        
+
         # Extract verb phrases
         verb_phrases = []
         for token in doc:
@@ -104,21 +117,21 @@ class QueryBuilder:
                         phrase = f"{token.lemma_.lower()} {child.lemma_.lower()}"
                         if phrase not in verb_phrases:
                             verb_phrases.append(phrase)
-        
+
         # Combine all types of important terms
         all_terms = important_terms + noun_chunks + verb_phrases
-        
+
         # Remove duplicates and return top terms
         unique_terms = list(dict.fromkeys(all_terms))
         return unique_terms[:15]  # Return top 15 terms
-    
+
     def build(self, text: str, max_queries: int = 3, max_len: int = 180) -> List[str]:
         text = text.strip()
-        
+
         # Handle very short texts
         if len(text.split()) <= 3:
             return [text[:max_len]]
-        
+
         # Split into sentences
         sentences = self._split_sentences(text)
         if not sentences:
@@ -126,7 +139,7 @@ class QueryBuilder:
 
         # Extract entities from the entire text
         all_names, all_dates_nums = self._extract_enhanced_entities(text)
-        
+
         queries = []
         seen = set()
 
@@ -148,7 +161,7 @@ class QueryBuilder:
                     pair_query = f"{all_names[i]} {all_names[i+1]}"
                 else:
                     pair_query = all_names[i]
-                
+
                 if pair_query not in seen and len(pair_query) <= max_len:
                     seen.add(pair_query)
                     queries.append(pair_query)
@@ -177,36 +190,100 @@ class QueryBuilder:
         # Ensure we have at least some queries
         if not queries:
             # Last resort: use first few meaningful words
-            words = [w for w in text.split() if len(w) > 3 and w.lower() not in {'the', 'and', 'for', 'with', 'this', 'that'}]
+            words = [
+                w
+                for w in text.split()
+                if len(w) > 3
+                and w.lower() not in {"the", "and", "for", "with", "this", "that"}
+            ]
             if words:
                 fallback_query = " ".join(words[:4])
                 queries.append(fallback_query[:max_len])
 
         return queries[:max_queries]
-    
+
     def _extract_meaningful_keywords(self, text: str) -> List[str]:
         """Extract meaningful keywords from text when NER fails."""
         # Remove common stop words and meaningless terms
         stop_words = {
-            'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
-            'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
-            'will', 'would', 'could', 'should', 'may', 'might', 'can', 'one', 'two', 'three', 'first', 'second',
-            'best', 'worst', 'good', 'bad', 'big', 'small', 'new', 'old', 'young', 'old', 'this', 'that',
-            'these', 'those', 'here', 'there', 'where', 'when', 'why', 'how', 'what', 'who', 'which'
+            "the",
+            "a",
+            "an",
+            "and",
+            "or",
+            "but",
+            "in",
+            "on",
+            "at",
+            "to",
+            "for",
+            "of",
+            "with",
+            "by",
+            "is",
+            "are",
+            "was",
+            "were",
+            "be",
+            "been",
+            "being",
+            "have",
+            "has",
+            "had",
+            "do",
+            "does",
+            "did",
+            "will",
+            "would",
+            "could",
+            "should",
+            "may",
+            "might",
+            "can",
+            "one",
+            "two",
+            "three",
+            "first",
+            "second",
+            "best",
+            "worst",
+            "good",
+            "bad",
+            "big",
+            "small",
+            "new",
+            "old",
+            "young",
+            "old",
+            "this",
+            "that",
+            "these",
+            "those",
+            "here",
+            "there",
+            "where",
+            "when",
+            "why",
+            "how",
+            "what",
+            "who",
+            "which",
         }
-        
+
         # Split text into words and filter meaningful ones
-        words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
+        words = re.findall(r"\b[a-zA-Z]+\b", text.lower())
         meaningful = []
-        
+
         for word in words:
             # Skip stop words, single letters, and very short words
-            if (word not in stop_words and 
-                len(word) > 2 and 
-                not word.isdigit() and
-                word not in meaningful):
+            if (
+                word not in stop_words
+                and len(word) > 2
+                and not word.isdigit()
+                and word not in meaningful
+            ):
                 meaningful.append(word)
-        
+
         # Return top meaningful keywords (prioritize longer, more specific words)
         meaningful.sort(key=len, reverse=True)
         return meaningful[:5]  # Return top 5 meaningful keywords
