@@ -32,15 +32,26 @@ class LiveCheckerService:
 
         # Simple decision rule for now
         decision = "no corroboration found"
+        verification_score = 0.0
+        
         if ranked:
             top_sim = ranked[0]["similarity"]
             if top_sim >= 0.80:
                 decision = "strong corroboration found"
+                verification_score = 0.1  # Low fake news score for strong corroboration
             elif top_sim >= 0.60:
                 decision = "partial corroboration"
+                verification_score = 0.3  # Medium fake news score for partial corroboration
+            else:
+                verification_score = 0.7  # Higher fake news score for weak corroboration
+        else:
+            verification_score = 0.9  # High fake news score for no corroboration
 
         return {
             "queries": queries,
+            "queries_generated": len(queries),
             "top_matches": ranked[:5],
             "decision": decision,
+            "verification_score": verification_score,
+            "stories_found": len(ranked)
         }

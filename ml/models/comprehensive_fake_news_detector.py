@@ -122,7 +122,11 @@ class ComprehensiveFakeNewsDetector:
             'factor_breakdown': factor_details,
             'factor_scores': factor_scores,
             'total_weighted_score': round(total_score, 4),
-            'dashboard_data': self._prepare_dashboard_data(final_verdict, final_confidence, total_score, factor_details)
+            'dashboard_data': self._prepare_dashboard_data(final_verdict, final_confidence, total_score, factor_details),
+            # Add live checker results for API access
+            'live_checker': live_checker_result,
+            # Add named entities for API access
+            'named_entities': ner_result
         }
     
     def _analyze_bert(self, bert_result: Dict[str, float]) -> float:
@@ -250,6 +254,8 @@ class ComprehensiveFakeNewsDetector:
             'confidence': confidence,
             'score': score,
             'color': color_map.get(verdict, '#6c757d'),
+            'risk_level': 'high' if score > 0.6 else 'medium' if score > 0.3 else 'low',
+            'verdict_category': verdict.split()[0].lower(),  # 'definitely', 'likely', 'suspicious'
             'factors': [
                 {
                     'name': 'BERT Classification',
