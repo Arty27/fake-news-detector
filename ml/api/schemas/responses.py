@@ -105,6 +105,7 @@ class AnalysisResult(BaseModel):
     reasoning: str
     factor_breakdown: Dict[str, FactorBreakdown]
     dashboard_data: Dict[str, Any]
+    live_match_results: List[Dict[str, Any]]
     analysis_timestamp: datetime
     processing_time_ms: int
 

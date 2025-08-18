@@ -52,6 +52,7 @@ async def analyze_text(request: TextAnalysisRequest):
             reasoning=result["reasoning"],
             factor_breakdown=result["factor_breakdown"],
             dashboard_data=result["dashboard_data"],
+            live_match_results=result["live_checker"],
             analysis_timestamp=result["analysis_timestamp"],
             processing_time_ms=result["processing_time_ms"],
         )

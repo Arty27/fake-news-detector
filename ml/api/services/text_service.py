@@ -69,7 +69,7 @@ class TextAnalysisService:
                 "analysis_timestamp": datetime.now(),
                 "processing_time_ms": processing_time,
                 # Add live checker results for dashboard display - use the original live_result
-                "live_checker": live_result,
+                "live_checker": live_result.get("top_matches", [{}]),
                 # Add named entities for dashboard display - use the original entities
                 "named_entities": entities if entities else [],
                 "raw_data": {
