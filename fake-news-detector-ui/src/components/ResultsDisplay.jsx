@@ -23,6 +23,7 @@ import {
   Globe,
   User,
 } from "lucide-react";
+import CustomGrid from "./CustomGrid";
 
 const ResultsDisplay = ({ results }) => {
   const [expanded, setExpanded] = useState("panel1");
@@ -375,7 +376,9 @@ const ResultsDisplay = ({ results }) => {
           <Accordion
             expanded={expanded === "panel1"}
             onChange={handleAccordionChange("panel1")}
-            sx={{ mb: 2 }}
+            sx={{
+              mb: 2,
+            }}
           >
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -390,82 +393,7 @@ const ResultsDisplay = ({ results }) => {
               <Grid container spacing={2}>
                 {Object.entries(results.factor_breakdown).map(
                   ([factor, data]) => (
-                    <Grid item xs={12} md={6} key={factor}>
-                      <Paper
-                        elevation={0}
-                        sx={{
-                          p: 2,
-                          border: "1px solid",
-                          borderColor: "divider",
-                          borderRadius: 2,
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            mb: 1,
-                          }}
-                        >
-                          <Typography
-                            variant="subtitle1"
-                            sx={{
-                              fontWeight: 600,
-                              textTransform: "capitalize",
-                            }}
-                          >
-                            {factor.replace("_", " ")}
-                          </Typography>
-                          <Chip
-                            label={`${((data?.score || 0) * 100).toFixed(1)}%`}
-                            color={
-                              (data?.score || 0) > 0.7
-                                ? "error"
-                                : (data?.score || 0) > 0.4
-                                ? "warning"
-                                : "success"
-                            }
-                            size="small"
-                          />
-                        </Box>
-                        <LinearProgress
-                          variant="determinate"
-                          value={(data?.score || 0) * 100}
-                          color={
-                            (data?.score || 0) > 0.7
-                              ? "error"
-                              : (data?.score || 0) > 0.4
-                              ? "warning"
-                              : "success"
-                          }
-                          sx={{ height: 6, borderRadius: 3, mb: 1 }}
-                        />
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            fontSize: "0.875rem",
-                          }}
-                        >
-                          <span>
-                            Weight: {((data?.weight || 0) * 100).toFixed(0)}%
-                          </span>
-                          <span>
-                            Contribution:{" "}
-                            {((data?.contribution || 0) * 100).toFixed(1)}%
-                          </span>
-                        </Box>
-                        {data?.decision && (
-                          <Chip
-                            label={data.decision}
-                            variant="outlined"
-                            size="small"
-                            sx={{ mt: 1 }}
-                          />
-                        )}
-                      </Paper>
-                    </Grid>
+                    <CustomGrid factor={factor} data={data} />
                   )
                 )}
               </Grid>
@@ -474,7 +402,7 @@ const ResultsDisplay = ({ results }) => {
         )}
 
       {/* Live News Verification Results */}
-      {results.live_checker && (
+      {results.live_match_results && (
         <Accordion
           expanded={expanded === "panel2"}
           onChange={handleAccordionChange("panel2")}
@@ -495,13 +423,19 @@ const ResultsDisplay = ({ results }) => {
                 sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}
               >
                 <Chip
-                  label={results.live_checker.decision || "Unknown"}
+                  label={
+                    results.factor_breakdown.live_checker.decision || "Unknown"
+                  }
                   color={
-                    results.live_checker.decision?.includes("strong")
+                    results.factor_breakdown.live_checker.decision?.includes(
+                      "strong"
+                    )
                       ? "success"
-                      : results.live_checker.decision?.includes("partial")
+                      : results.factor_breakdown.live_checker.decision?.includes(
+                          "partial"
+                        )
                       ? "warning"
-                      : results.live_checker.decision?.includes(
+                      : results.factor_breakdown.live_checker.decision?.includes(
                           "no corroboration"
                         )
                       ? "error"
@@ -510,26 +444,29 @@ const ResultsDisplay = ({ results }) => {
                   size="medium"
                   sx={{ fontWeight: 600 }}
                 />
-                {results.live_checker.verification_score && (
+                {results.factor_breakdown.live_checker.verification_score && (
                   <Chip
                     label={`Score: ${(
-                      results.live_checker.verification_score * 100
+                      results.factor_breakdown.live_checker.verification_score *
+                      100
                     ).toFixed(1)}%`}
                     variant="outlined"
                     size="medium"
                   />
                 )}
-                {results.live_checker.queries_generated && (
+                {results.factor_breakdown.live_checker.queries_generated && (
                   <Chip
-                    label={`${results.live_checker.queries_generated} Queries`}
+                    label={`${results.factor_breakdown.live_checker.queries_generated} Queries`}
                     variant="outlined"
                     size="medium"
                   />
                 )}
               </Box>
-
-              {results.live_checker.top_matches &&
-                results.live_checker.top_matches.length > 0 && (
+              {!results.factor_breakdown.live_checker.decision?.includes(
+                "no corroboration"
+              ) &&
+                results.live_match_results &&
+                results.live_match_results.length > 0 && (
                   <Box>
                     <Typography
                       variant="h6"
@@ -539,12 +476,13 @@ const ResultsDisplay = ({ results }) => {
                       📰 Matching Articles Found
                     </Typography>
                     <Grid container spacing={2}>
-                      {results.live_checker.top_matches.map((match, index) => (
+                      {results.live_match_results.map((match, index) => (
                         <Grid item xs={12} key={index}>
                           <Paper
                             elevation={0}
                             sx={{
                               p: 2,
+                              width: "80vw",
                               border: "1px solid",
                               borderColor: "divider",
                               borderRadius: 2,

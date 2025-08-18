@@ -2,7 +2,7 @@
 
 body {
   margin: 0;
-  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -86,7 +86,8 @@ html {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -94,3 +95,8 @@ html {
   }
 }
 
+.MuiAccordionSummary-root {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
