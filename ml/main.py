@@ -3,7 +3,7 @@ from models.sentiment_analysis import SentimentAnalyzer
 from models.named_entitiy_recognition import NERExtractor
 from models.claim_density import ClaimDensityScore
 from models.live_checker import LiveCheckerService
-from models.comprehensive_fake_news_detector import ComprehensiveFakeNewsDetector
+from models.comprehensive_fake_news_detector import CombinedFakeNewsDetector
 from models.url_fake_news_detector import URLFakeNewsDetector
 
 import json
@@ -17,7 +17,7 @@ def analyze_text_article(text: str):
     ner = NERExtractor()
     scorer = ClaimDensityScore()
     live_checker = LiveCheckerService()
-    comprehensive_detector = ComprehensiveFakeNewsDetector()
+    comprehensive_detector = CombinedFakeNewsDetector()
 
     # Run all analyses silently
     p_fake, p_real = classifier.predict(text)
@@ -53,9 +53,6 @@ def analyze_url_article(url: str):
 
 
 def main():
-    """Main function - now clean and ready for API usage"""
-    # This function is now clean and ready for API integration
-    # All print statements have been removed
     pass
 
 

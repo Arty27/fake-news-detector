@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ComprehensiveFakeNewsDetector:
+class CombinedFakeNewsDetector:
     """
     Comprehensive fake news detector that combines all analysis factors
     with appropriate weights to provide final verdicts.
@@ -179,13 +179,13 @@ class ComprehensiveFakeNewsDetector:
 
             # If similarity is high (>0.6) and multiple stories found, treat as strong evidence
             if top_similarity > 0.6 and stories_found >= 3:
-                return 0.1  # Strong partial evidence = low fake news score
+                return 0.1
             else:
-                return 0.3  # Weak partial evidence = moderately suspicious
+                return 0.3
         elif "no corroboration" in decision:
-            return 0.9  # No supporting evidence = highly suspicious/fake
+            return 0.9
         else:
-            return 0.5  # Unknown status
+            return 0.5
 
     def _analyze_claim_density(self, density_result: Dict[str, Any]) -> float:
         """Analyze claim density results."""
@@ -195,11 +195,11 @@ class ComprehensiveFakeNewsDetector:
 
         # High density + low entities = likely fake
         if semantic_density > 0.8 and claim_count > 0:
-            return 0.7  # Suspicious
+            return 0.7
         elif semantic_density > 0.6:
-            return 0.4  # Moderately suspicious
+            return 0.4
         else:
-            return 0.1  # Low suspicion
+            return 0.1
 
     def _analyze_named_entities(self, ner_result: List[Dict[str, str]]) -> float:
         """Analyze named entity presence."""

@@ -12,7 +12,7 @@ from models.sentiment_analysis import SentimentAnalyzer
 from models.named_entitiy_recognition import NERExtractor
 from models.claim_density import ClaimDensityScore
 from models.live_checker import LiveCheckerService
-from models.comprehensive_fake_news_detector import ComprehensiveFakeNewsDetector
+from models.comprehensive_fake_news_detector import CombinedFakeNewsDetector
 
 
 class TextAnalysisService:
@@ -25,7 +25,7 @@ class TextAnalysisService:
         self.ner = NERExtractor()
         self.scorer = ClaimDensityScore()
         self.live_checker = LiveCheckerService()
-        self.comprehensive_detector = ComprehensiveFakeNewsDetector()
+        self.comprehensive_detector = CombinedFakeNewsDetector()
 
     def analyze_text(self, text: str) -> Dict[str, Any]:
         """

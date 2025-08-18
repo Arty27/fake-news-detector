@@ -5,6 +5,7 @@ A comprehensive fake news detection system that combines **text-based analysis**
 ## 🚀 Features
 
 ### **Text-Based Analysis** (Original System)
+
 - 🤖 **BERT Classification** - Deep learning-based fake news detection
 - 😊 **Sentiment Analysis** - Emotional tone analysis
 - 🏷️ **Named Entity Recognition** - Person, place, organization detection
@@ -13,6 +14,7 @@ A comprehensive fake news detection system that combines **text-based analysis**
 - 🎯 **Comprehensive Scoring** - Weighted combination of all factors
 
 ### **URL-Based Analysis** (New System)
+
 - 🌐 **Web Scraping** - Extract articles directly from URLs
 - 🔗 **Domain Trustworthiness** - Check source credibility
 - 📰 **Article Metadata** - Title, authors, publication date
@@ -23,6 +25,7 @@ A comprehensive fake news detection system that combines **text-based analysis**
 ## 🛠️ Installation
 
 ### **1. Install Dependencies**
+
 ```bash
 # For text-based analysis (existing)
 pip install -r requirements.txt
@@ -35,6 +38,7 @@ python -m spacy download en_core_web_sm
 ```
 
 ### **2. Environment Setup**
+
 ```bash
 # Set your News API key (optional, for live verification)
 export NEWS_API_KEY="your_api_key_here"
@@ -43,16 +47,19 @@ export NEWS_API_KEY="your_api_key_here"
 ## 🎮 Usage
 
 ### **Interactive Mode (Recommended)**
+
 ```bash
 python main.py
 ```
 
 Choose from:
+
 1. **Analyze text article** - Paste or type article text
 2. **Analyze article from URL** - Provide article URL
 3. **Run demo examples** - See both systems in action
 
 ### **Direct Function Calls**
+
 ```python
 from main import analyze_text_article, analyze_url_article
 
@@ -68,6 +75,7 @@ analyze_url_article(url)
 ## 📊 Understanding Results
 
 ### **Text Analysis Results**
+
 - 🚨 **Final Verdict**: DEFINITELY FAKE, LIKELY FAKE, SUSPICIOUS, LIKELY REAL, DEFINITELY REAL
 - 🎯 **Confidence Level**: VERY HIGH, HIGH, MEDIUM
 - 📊 **Fake News Score**: 0.0 (real) to 1.0 (fake)
@@ -75,6 +83,7 @@ analyze_url_article(url)
 - 📋 **Factor Breakdown**: How each component contributed
 
 ### **URL Analysis Results**
+
 - 🌐 **URL & Domain**: Source information
 - 📰 **Article Metadata**: Title, authors, publication date
 - 🚨 **Prediction**: likely_real, uncertain, likely_fake
@@ -118,15 +127,17 @@ analyze_url_article(url)
 ## 🧪 Testing
 
 ### **Run Integration Tests**
+
 ```bash
 python test_integration.py
 ```
 
 ### **Test Individual Components**
+
 ```python
 # Test text detector
-from models.comprehensive_fake_news_detector import ComprehensiveFakeNewsDetector
-detector = ComprehensiveFakeNewsDetector()
+from models.comprehensive_fake_news_detector import CombinedFakeNewsDetector
+detector = CombinedFakeNewsDetector()
 
 # Test URL detector
 from models.url_fake_news_detector import URLFakeNewsDetector
@@ -136,12 +147,14 @@ url_detector = URLFakeNewsDetector()
 ## 📈 Performance & Accuracy
 
 ### **Text Analysis**
+
 - **Speed**: Fast (local processing)
 - **Accuracy**: High (trained models)
 - **Coverage**: Comprehensive (5 analysis factors)
 - **Use Case**: Direct text input, batch processing
 
 ### **URL Analysis**
+
 - **Speed**: Medium (web scraping + analysis)
 - **Accuracy**: High (multiple verification layers)
 - **Coverage**: Extensive (URL + content + cross-reference)
@@ -152,17 +165,20 @@ url_detector = URLFakeNewsDetector()
 ### **Common Issues**
 
 1. **Import Errors**
+
    ```bash
    # Install missing packages
    pip install -r requirements_url_detector.txt
    ```
 
 2. **spaCy Model Missing**
+
    ```bash
    python -m spacy download en_core_web_sm
    ```
 
 3. **URL Access Issues**
+
    - Check internet connection
    - Verify URL is accessible
    - Some sites block automated access
@@ -172,6 +188,7 @@ url_detector = URLFakeNewsDetector()
    - Check GPU drivers if using CUDA
 
 ### **Performance Tips**
+
 - Use GPU if available for faster BERT processing
 - Limit text length for very long articles
 - Cache results for repeated analysis
@@ -187,13 +204,15 @@ url_detector = URLFakeNewsDetector()
 
 ## 📚 API Reference
 
-### **ComprehensiveFakeNewsDetector**
+### **CombinedFakeNewsDetector**
+
 ```python
-detector = ComprehensiveFakeNewsDetector()
+detector = CombinedFakeNewsDetector()
 result = detector.detect(bert_data, sentiment, entities, claims, live_check)
 ```
 
 ### **URLFakeNewsDetector**
+
 ```python
 detector = URLFakeNewsDetector()
 result = detector.analyze_url("https://example.com/article")
@@ -213,6 +232,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**🎉 Ready to detect fake news like a pro!** 
+**🎉 Ready to detect fake news like a pro!**
 
 Run `python main.py` to get started with the interactive system.
