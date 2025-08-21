@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   XCircle,
   BarChart3,
+  FileText,
   Target,
   Globe,
   User,
@@ -96,6 +97,81 @@ const ResultsDisplay = ({ results }) => {
 
   return (
     <Box>
+      {/* Original Input Display */}
+      {results.original_input && (
+        <Card
+          sx={{
+            mb: 3,
+            backgroundColor: "primary.50",
+            border: "1px solid",
+            borderColor: "primary.200",
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ fontWeight: 600, mb: 2, color: "primary.main" }}
+            >
+              📝 Original Input ({results.input_type === "url" ? "URL" : "Text"}
+              )
+            </Typography>
+            {results.input_type === "url" ? (
+              <Box>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 1 }}
+                >
+                  🔗 URL Analyzed:
+                </Typography>
+                <Typography
+                  variant="body1"
+                  component="a"
+                  href={results.original_input}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    color: "primary.main",
+                    textDecoration: "none",
+                    fontWeight: 500,
+                    wordBreak: "break-all",
+                  }}
+                >
+                  {results.original_input}
+                </Typography>
+              </Box>
+            ) : (
+              <Box>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 1 }}
+                >
+                  📄 Text Analyzed:
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    backgroundColor: "background.paper",
+                    p: 2,
+                    borderRadius: 1,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    fontFamily: "monospace",
+                    whiteSpace: "pre-wrap",
+                    maxHeight: "200px",
+                    overflow: "auto",
+                  }}
+                >
+                  {results.original_input}
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
         <BarChart3
           size={24}

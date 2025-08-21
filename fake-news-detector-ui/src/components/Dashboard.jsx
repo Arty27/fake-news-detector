@@ -1,69 +1,69 @@
-import { useState } from 'react'
-import { 
-  Container, 
-  Grid, 
-  Card, 
-  CardContent, 
-  Typography, 
+import { useState } from "react";
+import {
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
   Box,
   Tabs,
   Tab,
-  Paper
-} from '@mui/material'
-import TextAnalysis from './TextAnalysis'
-import URLAnalysis from './URLAnalysis'
-import ResultsDisplay from './ResultsDisplay'
-import { FileText, Globe, BarChart3 } from 'lucide-react'
+  Paper,
+} from "@mui/material";
+import TextAnalysis from "./TextAnalysis";
+import URLAnalysis from "./URLAnalysis";
+import ResultsDisplay from "./ResultsDisplay";
+import { FileText, Globe, BarChart3 } from "lucide-react";
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState(0)
-  const [analysisResults, setAnalysisResults] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState(0);
+  const [analysisResults, setAnalysisResults] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue)
-  }
+    setActiveTab(newValue);
+  };
 
   const handleAnalysisComplete = (results) => {
-    setAnalysisResults(results)
-    setActiveTab(2) // Switch to results tab
-  }
+    setAnalysisResults(results);
+    setActiveTab(2); // Switch to results tab
+  };
 
   const handleAnalysisStart = () => {
-    setIsLoading(true)
-  }
+    setIsLoading(true);
+  };
 
   const handleAnalysisEnd = () => {
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Welcome Section */}
-      <Box sx={{ mb: 4, textAlign: 'center' }}>
-        <Typography 
-          variant="h3" 
-          component="h2" 
+      <Box sx={{ mb: 4, textAlign: "center" }}>
+        <Typography
+          variant="h3"
+          component="h2"
           gutterBottom
-          sx={{ 
+          sx={{
             fontWeight: 700,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            mb: 2
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            mb: 2,
           }}
         >
           AI-Powered Fake News Detection
         </Typography>
-        <Typography 
-          variant="h6" 
+        <Typography
+          variant="h6"
           color="text.secondary"
-          sx={{ maxWidth: 800, mx: 'auto', lineHeight: 1.6 }}
+          sx={{ maxWidth: 800, mx: "auto", lineHeight: 1.6 }}
         >
-          Analyze articles using advanced AI techniques including BERT classification, 
-          sentiment analysis, named entity recognition, claim density analysis, 
-          and live news verification.
+          Analyze articles using advanced AI techniques including BERT
+          classification, sentiment analysis, named entity recognition, claim
+          density analysis, and live news verification.
         </Typography>
       </Box>
 
@@ -71,41 +71,41 @@ const Dashboard = () => {
       <Grid container spacing={3}>
         {/* Left Panel - Analysis Tools */}
         <Grid item xs={12} lg={8}>
-          <Paper 
-            elevation={0} 
-            sx={{ 
+          <Paper
+            elevation={0}
+            sx={{
               borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-              overflow: 'hidden'
+              border: "1px solid",
+              borderColor: "divider",
+              overflow: "hidden",
             }}
           >
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-              <Tabs 
-                value={activeTab} 
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={activeTab}
                 onChange={handleTabChange}
                 sx={{
-                  '& .MuiTab-root': {
+                  "& .MuiTab-root": {
                     minHeight: 64,
-                    fontSize: '1rem',
+                    fontSize: "1rem",
                     fontWeight: 600,
-                    textTransform: 'none'
-                  }
+                    textTransform: "none",
+                  },
                 }}
               >
-                <Tab 
-                  icon={<FileText size={20} />} 
-                  label="Text Analysis" 
+                <Tab
+                  icon={<FileText size={20} />}
+                  label="Text Analysis"
                   iconPosition="start"
                 />
-                <Tab 
-                  icon={<Globe size={20} />} 
-                  label="URL Analysis" 
+                <Tab
+                  icon={<Globe size={20} />}
+                  label="URL Analysis"
                   iconPosition="start"
                 />
-                <Tab 
-                  icon={<BarChart3 size={20} />} 
-                  label="Results" 
+                <Tab
+                  icon={<BarChart3 size={20} />}
+                  label="Results"
                   iconPosition="start"
                   disabled={!analysisResults}
                 />
@@ -114,7 +114,7 @@ const Dashboard = () => {
 
             <Box sx={{ p: 3, minHeight: 400 }}>
               {activeTab === 0 && (
-                <TextAnalysis 
+                <TextAnalysis
                   onAnalysisComplete={handleAnalysisComplete}
                   onAnalysisStart={handleAnalysisStart}
                   onAnalysisEnd={handleAnalysisEnd}
@@ -122,7 +122,7 @@ const Dashboard = () => {
                 />
               )}
               {activeTab === 1 && (
-                <URLAnalysis 
+                <URLAnalysis
                   onAnalysisComplete={handleAnalysisComplete}
                   onAnalysisStart={handleAnalysisStart}
                   onAnalysisEnd={handleAnalysisEnd}
@@ -139,22 +139,6 @@ const Dashboard = () => {
         {/* Right Panel - Quick Stats */}
         <Grid item xs={12} lg={4}>
           <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Card sx={{ 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white'
-              }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    How It Works
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Our system analyzes articles using multiple AI models to detect fake news with high accuracy.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
             <Grid item xs={12}>
               <Card>
                 <CardContent>
@@ -188,11 +172,14 @@ const Dashboard = () => {
                   <Typography variant="h6" gutterBottom>
                     Accuracy Score
                   </Typography>
-                  <Typography variant="h3" sx={{ color: 'success.main', fontWeight: 700 }}>
-                    94.2%
+                  <Typography
+                    variant="h3"
+                    sx={{ color: "success.main", fontWeight: 700 }}
+                  >
+                    81.25%
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Based on extensive testing with verified datasets
+                    Based on extensive testing with verified news articles.
                   </Typography>
                 </CardContent>
               </Card>
@@ -201,7 +188,7 @@ const Dashboard = () => {
         </Grid>
       </Grid>
     </Container>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

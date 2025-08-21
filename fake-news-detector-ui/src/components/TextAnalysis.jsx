@@ -44,7 +44,12 @@ const TextAnalysis = ({ onAnalysisComplete, onAnalysisStart, onAnalysisEnd, isLo
       })
 
       if (response.data.success) {
-        onAnalysisComplete(response.data.data)
+        // Pass both the analysis results and the original input text
+        onAnalysisComplete({
+          ...response.data.data,
+          original_input: text.trim(),
+          input_type: 'text'
+        })
       } else {
         setError(response.data.error || 'Analysis failed')
       }

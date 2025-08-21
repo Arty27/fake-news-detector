@@ -59,7 +59,12 @@ const URLAnalysis = ({ onAnalysisComplete, onAnalysisStart, onAnalysisEnd, isLoa
       })
 
       if (response.data.success) {
-        onAnalysisComplete(response.data.data)
+        // Pass both the analysis results and the original input URL
+        onAnalysisComplete({
+          ...response.data.data,
+          original_input: url.trim(),
+          input_type: 'url'
+        })
       } else {
         setError(response.data.error || 'Analysis failed')
       }
