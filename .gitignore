@@ -41,3 +41,5 @@ ml/data/source_trust_list.json  # (if sensitive or large, otherwise optional)
 # OS files
 .DS_Store
 Thumbs.db
+
+test*.py

@@ -48,6 +48,7 @@ async def analyze_url(request: URLAnalysisRequest):
             reasoning=result["reasoning"],
             factor_breakdown=result["factor_breakdown"],
             dashboard_data=result["dashboard_data"],
+            live_match_results=result["live_checker"].get("top_matches", [{}]),
             analysis_timestamp=result["analysis_timestamp"],
             processing_time_ms=result["processing_time_ms"],
         )
